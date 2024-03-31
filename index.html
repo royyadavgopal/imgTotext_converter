@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<form>
+    <input type="file" id='files' name="files[]" multiple>
+ </form>
+ <p id="result"></p>
+<script type="text/javascript">
+function call(value){
+        var data = new FormData();
+       data.append("value",value);
+       data.append("language"   , "eng");
+        data.append("apikey"  , "5707bb974788957");
+        data.append("isOverlayRequired", true);
+
+            jQuery.ajax({
+            url: "https://api.ocr.space/parse/image",
+            data:data,
+            dataType: 'json',
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (ocrParsedResult) {
+                var parsedResults = ocrParsedResult["ParsedResults"];
+                var ocrExitCode = ocrParsedResult["OCRExitCode"];
+                var isErroredOnProcessing = ocrParsedResult["IsErroredOnProcessing"];
+                var errorMessage = ocrParsedResult["ErrorMessage"];
+                var errorDetails = ocrParsedResult["ErrorDetails"];
+                var processingTimeInMilliseconds = ocrParsedResult["ProcessingTimeInMilliseconds"];
+                    $.each(parsedResults, function (index, value) {
+                        var exitCode = value["FileParseExitCode"];
+                        console.log(exitCode);
+                        var parsedText = value["ParsedText"];
+                        var errorMessage = value["ParsedTextFileName"];
+                        var errorDetails = value["ErrorDetails"];
+                        var textOverlay = value["TextOverlay"];
+                        var pageText = '';
+                        switch (+exitCode) {
+                            case 1:
+                                pageText = parsedText;
+                                break;
+                            case 0:
+                            case -10:
+                            case -20:
+                            case -30:
+                            case -99:
+                            default:
+                                pageText += "Error: " + errorMessage;
+                                break;
+                        }
+                        console.log(pageText);
+          $("#result").append(parsedText+"<br><br><br>");
+                        $.each(textOverlay["Lines"], function (index, value) {
+                        });
+                    });
+                }
+           // }
+        });
+}
+    $(':file').on('change', function() {
+    
+     var formData = new FormData();
+   var totalfiles = document.getElementById('files').files.length;
+   console.log(totalfiles);
+  
+   for (var index = 0; index < totalfiles; index++) {
+           console.log("index"+index);
+        formData.append("files[]", document.getElementById('files').files[index]);
+        
+     }
+  
+   for(var value of formData.values())
+     {
+         console.log(value)
+         call(value);
+    }
+
+        //Send OCR Parsing request asynchronously
+    });
+</script>
+</body>
+</html>
