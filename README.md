@@ -1,7 +1,7 @@
-Convert images to text
+Convert images to text.
 
-= > this is simple program which convert image to text.
+=>This is a simple programme that converts images to text.
 
-=> genrate your api key from https://ocr.space/OCRAPI
+=>Generate your API key from https://ocr.space/OCRAPI.
 
      
